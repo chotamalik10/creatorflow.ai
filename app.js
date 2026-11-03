@@ -1,6 +1,6 @@
 const $=id=>document.getElementById(id),KEY="creatorflow.projects.v1";let projects=read(),active=null,scenes=[{name:"Opening hook"},{name:"Main point"},{name:"Payoff and CTA"}];
 function newId(){
-  if(window.crypto?.randomUUID)return window.newId();
+  if(window.crypto?.randomUUID)return window.crypto.randomUUID();
   const bytes=new Uint8Array(16);
   if(window.crypto?.getRandomValues)window.crypto.getRandomValues(bytes);
   else for(let i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);
