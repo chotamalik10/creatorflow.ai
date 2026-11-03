@@ -107,12 +107,13 @@ def build_render_command(
             f"[{index}:v]scale={width}:{height}:force_original_aspect_ratio=decrease,"
             f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v{index}]"
         )
+    if audio is not None:
+        command.extend(["-i", str(audio)])
     joined = "".join(f"[v{index}]" for index in range(len(images)))
     filters.append(f"{joined}concat=n={len(images)}:v=1:a=0[outv]")
     command.extend(["-filter_complex", ";".join(filters), "-map", "[outv]"])
     command.extend(["-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p", "-movflags", "+faststart"])
     if audio is not None:
-        command.extend(["-i", str(audio)])
         command.extend(["-map", f"{len(images)}:a:0", "-c:a", "aac", "-b:a", "160k", "-shortest"])
     else:
         command.append("-an")
