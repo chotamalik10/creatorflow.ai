@@ -127,6 +127,27 @@ async function initCloud(){
 }
 accountButton.onclick=()=>{if(authDialog?.showModal)authDialog.showModal();else notify("Please use a modern browser for account access")};
 $("auth-close").onclick=()=>authDialog.close();
+async function signInWithProvider(provider){
+  if(!cloudClient){authMessage("Cloud sign-in is not configured. Please try again later.",true);return;}
+  const button=$(provider==="google"?"auth-google":"auth-github");
+  const label=button.querySelector("span").textContent;
+  document.querySelectorAll(".social-button").forEach(b=>b.disabled=true);
+  button.querySelector("span").textContent="Connecting…";
+  authMessage("Connecting securely to "+(provider==="google"?"Google":"GitHub")+"…");
+  try{
+    const {error}=await cloudClient.auth.signInWithOAuth({
+      provider,
+      options:{redirectTo:location.href.split("#")[0],queryParams:provider==="google"?{access_type:"offline",prompt:"select_account"}:undefined}
+    });
+    if(error)throw error;
+  }catch(error){
+    authMessage(error.message||"Social sign-in could not start. Check provider settings.",true);
+    document.querySelectorAll(".social-button").forEach(b=>b.disabled=false);
+    button.querySelector("span").textContent=label;
+  }
+}
+$("auth-google").onclick=()=>void signInWithProvider("google");
+$("auth-github").onclick=()=>void signInWithProvider("github");
 $("auth-form").onsubmit=async event=>{
   event.preventDefault();
   if(!cloudClient){authMessage("Cloud is not configured. Ask the site administrator to finish Supabase setup.",true);return;}
