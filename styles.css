@@ -36,3 +36,5 @@
 .auth-card input:focus{outline:2px solid #8f83f1;outline-offset:1px;border-color:#8f83f1}
 .auth-actions button:disabled{opacity:.55;cursor:wait}
 @media(max-width:680px){.auth-social{gap:9px}.social-button{min-height:48px}}
+
+.auth-social[hidden],.auth-email-section[hidden]{display:none!important}
