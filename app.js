@@ -31,7 +31,7 @@ async function saveCloudProject(project){
   if(!cloudClient||!cloudUser||!project)return;
   const row={id:project.id,owner_id:cloudUser.id,title:project.title||"Untitled project",format:project.format||"Shorts",project_data:project,updated_at:project.updatedAt||new Date().toISOString()};
   const {error}=await cloudClient.from("creator_projects").upsert(row,{onConflict:"id"});
-  if(error){notify("Local save succeeded; cloud sync failed");console.error("CreatorFlow cloud save:",error.message);}
+  if(error){notify("Local save succeeded; cloud sync failed");console.error("CreatorFlow cloud save:",error.message);}else{cloudProjectIds.add(project.id);localStorage.setItem(KEY,JSON.stringify(projects.filter(p=>!cloudProjectIds.has(p.id))));}
 }
 async function loadCloudProjects(){
   if(!cloudClient||!cloudUser)return;
