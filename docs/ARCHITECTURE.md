@@ -22,7 +22,7 @@ A free-tier deployment is possible for a small beta, but free plans have quotas,
 5. Avoid collecting unnecessary personal information.
 
 ## Current implementation status
-The current frontend is a local planning prototype. The SQL schema in `supabase/schema.sql` defines the first cloud data layer, but cloud login/sync is not active until a Supabase project is configured and the client integration is implemented and tested.
+The frontend currently provides local-first project planning, local Ollama script drafting through the Python helper, browser voice preview, editable caption/SRT export, shot-list CSV, and local FFmpeg slideshow rendering. Supabase browser auth and private cloud project sync are implemented but require the owner-configured Supabase project and live multi-account RLS verification. Live trend research, hosted AI generation, generated downloadable voice tracks, stock-media sourcing, full browser video editing, YouTube OAuth/publishing, and analytics remain future work.
 
 ## Delivery phases
 1. Foundation, documentation, schema, and local workflow.
