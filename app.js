@@ -38,9 +38,28 @@ render();renderScenes();countWords();if("serviceWorker"in navigator&&location.pr
 const cloudConfig=window.CREATORFLOW_CONFIG||{};
 let cloudClient=null,cloudUser=null;
 const cloudProjectIds=new Set();
+let cloudOwnerId=null;
 const authDialog=$("auth-dialog"),authStatus=$("auth-status"),accountButton=$("account-btn");
 function authMessage(message,isError=false){authStatus.textContent=message;authStatus.classList.toggle("error",isError)}
-function clearCloudProjects(){const activeWasCloud=active&&cloudProjectIds.has(active.id);projects=projects.filter(p=>!cloudProjectIds.has(p.id));cloudProjectIds.clear();if(activeWasCloud){active=null;$("title").value="";$("script-text").value="";$("voice").value="";$("music").value="";scenes=[{name:"Opening hook"},{name:"Main point"},{name:"Payoff and CTA"}];renderScenes();countWords()}render()}
+function clearCloudProjects(){
+  const activeWasCloud=active&&cloudProjectIds.has(active.id);
+  projects=projects.filter(p=>!cloudProjectIds.has(p.id));
+  cloudProjectIds.clear();
+  cloudOwnerId=null;
+  if(activeWasCloud){
+    active=null;
+    $("title").value="";
+    $("script-text").value="";
+    $("voice").value="";
+    $("music").value="";
+    $("voiceover-text").value="";
+    $("captions-text").value="";
+    scenes=[{name:"Opening hook",visual:"",narration:"",duration:5},{name:"Main point",visual:"",narration:"",duration:8},{name:"Payoff and CTA",visual:"",narration:"",duration:5}];
+    renderScenes();
+    countWords();
+  }
+  render();
+}
 function updateAccountUI(){
   if(cloudUser){
     accountButton.textContent=cloudUser.email||"Cloud account";
@@ -83,7 +102,12 @@ async function saveCloudProject(project){
 }
 async function loadCloudProjects(){
   if(!cloudClient||!cloudUser)return;
+  const requestedOwnerId=cloudUser.id;
+  if(cloudOwnerId&&cloudOwnerId!==requestedOwnerId)clearCloudProjects();
+  cloudOwnerId=requestedOwnerId;
   const {data,error}=await cloudClient.from("creator_projects").select("id,title,format,project_data,updated_at").order("updated_at",{ascending:false});
+  // Ignore a response that finishes after the account has changed or signed out.
+  if(cloudUser?.id!==requestedOwnerId||cloudOwnerId!==requestedOwnerId)return;
   if(error){authMessage("Cloud projects could not load: "+error.message,true);return;}
   const byId=new Map(projects.map(p=>[p.id,p]));
   for(const row of (data||[])){
@@ -123,12 +147,16 @@ async function initCloud(){
     const {data,error}=await cloudClient.auth.getSession();
     if(error)throw error;
     cloudUser=data.session?.user||null;
+    cloudOwnerId=cloudUser?.id||null;
     updateAccountUI();
     if(cloudUser)await loadCloudProjects();
     cloudClient.auth.onAuthStateChange((_event,session)=>{
-      cloudUser=session?.user||null;
+      const nextUser=session?.user||null;
+      if(cloudUser?.id!==nextUser?.id)clearCloudProjects();
+      cloudUser=nextUser;
+      cloudOwnerId=nextUser?.id||null;
       if(cloudUser){updateAccountUI();void loadCloudProjects();}
-      else{clearCloudProjects();updateAccountUI();}
+      else{updateAccountUI();}
     });
   }catch(error){
     cloudClient=null;
