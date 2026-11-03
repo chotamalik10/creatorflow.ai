@@ -15,3 +15,11 @@
 .text-action{background:none;border:0;color:#b9adff;text-align:left;padding:5px 0;font-size:12px}
 .auth-close{position:absolute;right:17px;top:12px;background:none;border:0;color:var(--muted);font-size:25px}
 @media(max-width:680px){.account-btn{padding:8px 9px;font-size:10px}.auth-card{padding:23px}.auth-actions{flex-direction:column}}
+
+.local-ai-box{margin:20px 0;padding:15px;background:#0c1425;border:1px solid #394866;border-radius:12px}
+.local-ai-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.local-ai-heading strong{font-size:13px;color:#e9e5ff}
+.local-ai-heading span,.helper{font-size:10px;color:var(--muted)}
+.local-ai-box label{margin-top:13px}
+.local-ai-box .wide{margin-top:10px}
+.local-ai-box .helper{display:block;line-height:1.5;margin-top:9px}
