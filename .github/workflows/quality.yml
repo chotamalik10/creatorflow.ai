@@ -1,0 +1,27 @@
+name: Quality checks
+on:
+  push:
+    branches: [main, "foundation/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check Python syntax
+        run: python -m py_compile tools/creatorflow.py
+      - name: Check JavaScript syntax
+        run: node --check app.js
+      - name: Validate JSON manifests
+        run: python -c "import json; json.load(open('manifest.webmanifest', encoding='utf-8'))"
+      - name: Check CLI help
+        run: python tools/creatorflow.py --help
