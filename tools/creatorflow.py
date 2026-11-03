@@ -6,6 +6,8 @@ import argparse
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import time
 import urllib.error
@@ -75,6 +77,81 @@ def build_ai_prompt(payload: dict[str, Any]) -> tuple[str, str]:
         "reminding the creator to verify factual claims and add sources."
     )
     return model, prompt
+
+
+
+def build_render_command(
+    ffmpeg: str,
+    images: list[Path],
+    output: Path,
+    audio: Path | None = None,
+    orientation: str = "vertical",
+    seconds: float = 4.0,
+) -> list[str]:
+    if not images:
+        raise ValueError("Add at least one image to the media folder.")
+    if len(images) > 40:
+        raise ValueError("A render can contain at most 40 images.")
+    if orientation not in {"vertical", "horizontal"}:
+        raise ValueError("Orientation must be vertical or horizontal.")
+    if seconds < 1 or seconds > 30:
+        raise ValueError("Seconds per image must be between 1 and 30.")
+    if output.suffix.lower() != ".mp4":
+        raise ValueError("Output filename must end in .mp4.")
+    width, height = (1080, 1920) if orientation == "vertical" else (1920, 1080)
+    command = [ffmpeg, "-y", "-hide_banner", "-loglevel", "error"]
+    filters = []
+    for index, image in enumerate(images):
+        command.extend(["-loop", "1", "-framerate", "30", "-t", str(seconds), "-i", str(image)])
+        filters.append(
+            f"[{index}:v]scale={width}:{height}:force_original_aspect_ratio=decrease,"
+            f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v{index}]"
+        )
+    joined = "".join(f"[v{index}]" for index in range(len(images)))
+    filters.append(f"{joined}concat=n={len(images)}:v=1:a=0[outv]")
+    command.extend(["-filter_complex", ";".join(filters), "-map", "[outv]"])
+    command.extend(["-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p", "-movflags", "+faststart"])
+    if audio is not None:
+        command.extend(["-i", str(audio)])
+        command.extend(["-map", f"{len(images)}:a:0", "-c:a", "aac", "-b:a", "160k", "-shortest"])
+    else:
+        command.append("-an")
+    command.append(str(output))
+    return command
+
+
+def command_render(args: argparse.Namespace) -> int:
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffmpeg:
+        print("FFmpeg was not found. Install FFmpeg and make sure ffmpeg.exe is on PATH.", file=sys.stderr)
+        return 2
+    image_dir = args.images.expanduser().resolve()
+    if not image_dir.is_dir():
+        print(f"Image folder not found: {image_dir}", file=sys.stderr)
+        return 2
+    images = sorted(
+        path for path in image_dir.iterdir()
+        if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}
+    )
+    audio = args.audio.expanduser().resolve() if args.audio else None
+    if audio is not None and not audio.is_file():
+        print(f"Audio file not found: {audio}", file=sys.stderr)
+        return 2
+    output = args.output.expanduser().resolve()
+    try:
+        command = build_render_command(ffmpeg, images, output, audio, args.orientation, args.seconds)
+    except ValueError as exc:
+        print(f"Cannot render: {exc}", file=sys.stderr)
+        return 2
+    output.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Rendering {len(images)} image(s) to {output} ...")
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as exc:
+        print(f"FFmpeg failed with exit code {exc.returncode}.", file=sys.stderr)
+        return 1
+    print(f"Video ready: {output}")
+    return 0
 
 
 def command_validate(args: argparse.Namespace) -> int:
@@ -203,6 +280,13 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--port", type=int, default=8000)
     serve.add_argument("--directory", type=Path, default=ROOT)
     serve.set_defaults(func=command_serve)
+    render = commands.add_parser("render", help="Render a slideshow MP4 from local images and optional audio.")
+    render.add_argument("--images", type=Path, required=True, help="Folder containing licensed/creator-owned images.")
+    render.add_argument("--output", type=Path, default=Path("creatorflow-video.mp4"))
+    render.add_argument("--audio", type=Path, help="Optional audio file you own or are licensed to use.")
+    render.add_argument("--orientation", choices=("vertical", "horizontal"), default="vertical")
+    render.add_argument("--seconds", type=float, default=4.0, help="Duration per image (1–30 seconds).")
+    render.set_defaults(func=command_render)
     return parser
 
 
