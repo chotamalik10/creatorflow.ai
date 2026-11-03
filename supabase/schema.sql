@@ -62,3 +62,7 @@ create trigger creator_projects_updated_at
   for each row execute function public.set_creator_project_updated_at();
 
 -- Do not add a public SELECT policy. Project contents are private to their owner.
+
+-- Supabase table privileges are required in addition to RLS policies.
+revoke all on table public.creator_projects from anon, public;
+grant select, insert, update, delete on table public.creator_projects to authenticated;
