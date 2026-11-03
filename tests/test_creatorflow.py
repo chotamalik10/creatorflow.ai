@@ -44,6 +44,16 @@ class ProjectValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Scene 1"):
             CLI.load_project(path)
 
+    def test_builds_short_script_prompt(self):
+        model, prompt = CLI.build_ai_prompt({"title": "Test topic", "format": "Shorts", "model": "qwen2.5:1.5b"})
+        self.assertEqual(model, "qwen2.5:1.5b")
+        self.assertIn("Test topic", prompt)
+        self.assertIn("120–180", prompt)
+
+    def test_rejects_unsafe_model_name(self):
+        with self.assertRaisesRegex(ValueError, "Model name"):
+            CLI.build_ai_prompt({"title": "Test", "model": "../bad"})
+
     def test_rejects_non_object_json(self):
         path = self.write_json(["not", "an", "object"])
         with self.assertRaisesRegex(ValueError, "JSON object"):
