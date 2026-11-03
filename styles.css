@@ -23,3 +23,18 @@
 .local-ai-box label{margin-top:13px}
 .local-ai-box .wide{margin-top:10px}
 .local-ai-box .helper{display:block;line-height:1.5;margin-top:9px}
+
+.auth-social{display:grid;gap:10px;margin:18px 0 16px}
+.social-button{width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;gap:11px;border-radius:11px;border:1px solid #3a4965;background:#f8fafc;color:#172033;font-weight:700;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.social-button:hover{transform:translateY(-1px);border-color:#8e83ee;background:#fff}
+.social-button.github{background:#171d2b;color:#f7f8fc;border-color:#3b465e}
+.social-button.github:hover{background:#222b3e}
+.social-button svg{width:19px;height:19px;flex:0 0 19px}
+.social-button:disabled{opacity:.55;cursor:wait;transform:none}
+.auth-divider{display:flex;align-items:center;gap:12px;color:#8290a8;font-size:9px;font-weight:800;letter-spacing:1.25px;margin:18px 0}
+.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#2b3851;flex:1}
+.auth-card input:focus{outline:2px solid #8f83f1;outline-offset:1px;border-color:#8f83f1}
+.auth-actions button:disabled{opacity:.55;cursor:wait}
+@media(max-width:680px){.auth-social{gap:9px}.social-button{min-height:48px}}
+
+.auth-social[hidden],.auth-email-section[hidden]{display:none!important}

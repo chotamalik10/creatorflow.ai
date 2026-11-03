@@ -45,6 +45,8 @@ function updateAccountUI(){
     $("auth-sync-local").hidden=false;
     $("auth-signin").hidden=true;
     $("auth-signup").hidden=true;
+    $("auth-social").hidden=true;
+    $("auth-email-section").hidden=true;
     authMessage("Signed in as "+(cloudUser.email||"your account")+". Cloud projects are private to your account.");
   }else{
     accountButton.textContent=cloudClient?"Sign in / Sync":"Local mode";
@@ -56,6 +58,8 @@ function updateAccountUI(){
     $("auth-sync-local").hidden=true;
     $("auth-signin").hidden=false;
     $("auth-signup").hidden=false;
+    $("auth-social").hidden=false;
+    $("auth-email-section").hidden=false;
   }
 }
 async function saveCloudProject(project){
@@ -127,6 +131,27 @@ async function initCloud(){
 }
 accountButton.onclick=()=>{if(authDialog?.showModal)authDialog.showModal();else notify("Please use a modern browser for account access")};
 $("auth-close").onclick=()=>authDialog.close();
+async function signInWithProvider(provider){
+  if(!cloudClient){authMessage("Cloud sign-in is not configured. Please try again later.",true);return;}
+  const button=$(provider==="google"?"auth-google":"auth-github");
+  const label=button.querySelector("span").textContent;
+  document.querySelectorAll(".social-button").forEach(b=>b.disabled=true);
+  button.querySelector("span").textContent="Connecting…";
+  authMessage("Connecting securely to "+(provider==="google"?"Google":"GitHub")+"…");
+  try{
+    const {error}=await cloudClient.auth.signInWithOAuth({
+      provider,
+      options:{redirectTo:location.href.split("#")[0],queryParams:provider==="google"?{access_type:"offline",prompt:"select_account"}:undefined}
+    });
+    if(error)throw error;
+  }catch(error){
+    authMessage(error.message||"Social sign-in could not start. Check provider settings.",true);
+    document.querySelectorAll(".social-button").forEach(b=>b.disabled=false);
+    button.querySelector("span").textContent=label;
+  }
+}
+$("auth-google").onclick=()=>void signInWithProvider("google");
+$("auth-github").onclick=()=>void signInWithProvider("github");
 $("auth-form").onsubmit=async event=>{
   event.preventDefault();
   if(!cloudClient){authMessage("Cloud is not configured. Ask the site administrator to finish Supabase setup.",true);return;}
