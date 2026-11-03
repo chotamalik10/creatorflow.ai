@@ -45,6 +45,8 @@ function updateAccountUI(){
     $("auth-sync-local").hidden=false;
     $("auth-signin").hidden=true;
     $("auth-signup").hidden=true;
+    $("auth-social").hidden=true;
+    $("auth-email-section").hidden=true;
     authMessage("Signed in as "+(cloudUser.email||"your account")+". Cloud projects are private to your account.");
   }else{
     accountButton.textContent=cloudClient?"Sign in / Sync":"Local mode";
@@ -56,6 +58,8 @@ function updateAccountUI(){
     $("auth-sync-local").hidden=true;
     $("auth-signin").hidden=false;
     $("auth-signup").hidden=false;
+    $("auth-social").hidden=false;
+    $("auth-email-section").hidden=false;
   }
 }
 async function saveCloudProject(project){
