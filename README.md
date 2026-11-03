@@ -11,7 +11,10 @@ CreatorFlow AI is an open-source project for turning a video idea into a structu
 - Niche-based brainstorming prompts (not live trend data)
 - Shorts and long-form script structures
 - Editable scripts and word count
-- Scene-by-scene visual direction, narration and duration planning\n- Browser speech preview using voices installed on the device (preview only; no MP3 export)\n- Editable caption preparation and SRT subtitle download with estimated timings\n- Downloadable script text and shot-list CSV
+- Scene-by-scene visual direction, narration and duration planning
+- Browser speech preview using voices installed on the device (preview only; no MP3 export)
+- Editable caption preparation and SRT subtitle download with estimated timings
+- Downloadable script text and shot-list CSV
 - Browser-local project saving
 - JSON project export and text brief copy
 - Python terminal helper with no third-party dependencies
@@ -71,11 +74,11 @@ Configure `config.js` with your Supabase project URL and public anon/publishable
 3. [x] Dependency-free Windows CLI / local Wi-Fi serving helper
 4. [x] Supabase browser auth and private cloud sync integration (configuration required)
 5. [ ] Live Supabase signup/login and two-account RLS isolation verification
-7. [x] Optional local Ollama script drafting in local server mode
-8. [x] Local slideshow MP4 rendering with FFmpeg
-9. [ ] Caption/asset workflow and richer video templates
-10. [ ] YouTube OAuth, explicit publishing approval and analytics
-11. [ ] Security, accessibility and deployment verification
+6. [x] Optional local Ollama script drafting in local server mode
+7. [x] Local slideshow MP4 rendering with FFmpeg
+8. [x] Caption preparation, SRT export, narration preview and shot-list CSV
+9. [ ] YouTube OAuth, explicit publishing approval and analytics
+10. [ ] Security, accessibility and deployment verification
 
 ## Security and responsible use
 - Never commit API keys, service-role keys, OAuth secrets or access tokens.

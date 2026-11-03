@@ -10,7 +10,7 @@ function newId(){
 }
 const ideas={"AI & Technology":["5 AI tools that can save you an hour every day","What happens when AI agents work together?","3 beginner AI mistakes — and how to fix them","How large language models work, explained simply"],"Business & Money":["A one-page business plan for a first-time founder","Why small businesses need a cash-flow system","5 skills that create value before you spend money","How to validate a business idea before building"],"Motivation":["A 10-minute reset for days when you feel stuck","Stop waiting for motivation: build a tiny daily system","The compound effect of improving one percent","How to make progress when you have almost no time"],"Education & Facts":["The Feynman technique explained simply","3 everyday science facts that sound impossible","How memory works: learn more by testing yourself","A beginner's guide to critical thinking"],"History & Stories":["An invention that changed communication","A turning point that shaped the modern world","The rise and fall of a famous ancient city","How one idea changed an industry"],"Health & Fitness":["A beginner's guide to a walking habit","Why recovery matters as much as exercise","How to make a realistic weekly fitness plan","Common fitness myths worth checking"],"Animals & Nature":["How migratory birds navigate","Why octopuses are remarkable problem-solvers","The hidden teamwork inside an ecosystem","How animals adapt to extreme environments"]};
 function read(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}}function notify(s){let t=$("toast");t.textContent=s;t.classList.add("show");clearTimeout(notify.timer);notify.timer=setTimeout(()=>t.classList.remove("show"),2200)}function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function go(v){document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===v));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.view===v));$("crumb").textContent="Workspace / "+v[0].toUpperCase()+v.slice(1);document.querySelector(".sidebar").classList.remove("open");scrollTo(0,0)}
+function go(v){document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===v));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.view===v));$("crumb").textContent="Workspace / "+v[0].toUpperCase()+v.slice(1);document.querySelector(".sidebar").classList.remove("open");if(v==="export")updateExportSummary();scrollTo(0,0)}
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>go(b.dataset.view));document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));$("menu").onclick=()=>document.querySelector(".sidebar").classList.toggle("open");
 function render(){ $("count").textContent=projects.length;let host=$("projects");host.innerHTML=projects.length?projects.map(p=>'<div class="project"><div><strong>'+esc(p.title||"Untitled project")+'</strong><small>'+esc(p.format)+' · '+new Date(p.updatedAt).toLocaleDateString()+'</small></div><button data-open="'+p.id+'">Open →</button></div>').join():'<p class="empty">No projects yet. Create your first project to get started.</p>';host.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>open(b.dataset.open))}
 function fresh(){active={id:newId(),title:"",format:"Shorts",script:"",scenes:scenes.map(s=>({...s})),voice:"",music:"",voiceover:"",captions:"",updatedAt:new Date().toISOString()};$("title").value="";$("script-text").value="";$("script-format").value="Shorts";$("voice").value="";$("music").value="";$("voiceover-text").value="";$("captions-text").value="";scenes=active.scenes.map(s=>({...s}));renderScenes();go("script");notify("New project ready")}
@@ -29,18 +29,38 @@ function renderScenes(){
 }
 $("add-scene").onclick=()=>{scenes.push({name:"New scene",visual:"",narration:"",duration:5});renderScenes()};$("save-plan").onclick=save;
 function current(){if(!active&&($("title").value.trim()||$("script-text").value.trim()))save();else if(active)save();return active}function brief(){let p=current();if(!p)return "No project saved yet.";return "CREATORFLOW AI — PROJECT BRIEF\nTitle: "+p.title+"\nFormat: "+p.format+"\n\nSCRIPT\n"+p.script+"\n\nSCENES\n"+p.scenes.map((s,i)=>(i+1)+". "+s.name).join("\n")+"\n\nVOICEOVER\n"+p.voice+"\n\nAUDIO NOTES\n"+p.music+"\n\nStatus: planning brief only; no video has been rendered."}
+function updateExportSummary(){const p=current();if(!p){$("summary").textContent="Create or save a project first. Your production package will appear here.";return}const words=value=>String(value||"").trim().split(/\s+/).filter(Boolean).length;$("summary").textContent=["PROJECT PACKAGE READY","Title: "+p.title,"Format: "+p.format,"Script: "+words(p.script)+" words","Scenes: "+p.scenes.length,"Voiceover: "+words(p.voiceover)+" words","Captions: "+String(p.captions||"").split(/\n+/).filter(Boolean).length,"Shot list: "+p.scenes.length+" scene(s)","Saved: yes","Rendered video: no — export files below; local FFmpeg rendering is separate."].join("\n")}
 $("json").onclick=()=>{let p=current();if(!p){notify("Create a project first");return}let u=URL.createObjectURL(new Blob([JSON.stringify(p,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=u;a.download="creatorflow-project.json";a.click();URL.revokeObjectURL(u);notify("Project JSON downloaded")};
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(brief());notify("Project brief copied")}catch(e){notify("Clipboard unavailable — use JSON download")}};
-$("export").addEventListener("click",()=>{let p=current();$("summary").textContent=p?"Title: "+p.title+"\nFormat: "+p.format+"\nScript words: "+p.script.trim().split(/\s+/).filter(Boolean).length+"\nPlanned scenes: "+p.scenes.length+"\nSaved locally: yes\nRendered video: no — rendering is planned.":"Create or save a project to prepare your package."});
+
 render();renderScenes();countWords();if("serviceWorker"in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 
 // Optional Supabase cloud account and private project sync.
 const cloudConfig=window.CREATORFLOW_CONFIG||{};
 let cloudClient=null,cloudUser=null;
 const cloudProjectIds=new Set();
+let cloudOwnerId=null;
 const authDialog=$("auth-dialog"),authStatus=$("auth-status"),accountButton=$("account-btn");
 function authMessage(message,isError=false){authStatus.textContent=message;authStatus.classList.toggle("error",isError)}
-function clearCloudProjects(){const activeWasCloud=active&&cloudProjectIds.has(active.id);projects=projects.filter(p=>!cloudProjectIds.has(p.id));cloudProjectIds.clear();if(activeWasCloud){active=null;$("title").value="";$("script-text").value="";$("voice").value="";$("music").value="";scenes=[{name:"Opening hook"},{name:"Main point"},{name:"Payoff and CTA"}];renderScenes();countWords()}render()}
+function clearCloudProjects(){
+  const activeWasCloud=active&&cloudProjectIds.has(active.id);
+  projects=projects.filter(p=>!cloudProjectIds.has(p.id));
+  cloudProjectIds.clear();
+  cloudOwnerId=null;
+  if(activeWasCloud){
+    active=null;
+    $("title").value="";
+    $("script-text").value="";
+    $("voice").value="";
+    $("music").value="";
+    $("voiceover-text").value="";
+    $("captions-text").value="";
+    scenes=[{name:"Opening hook",visual:"",narration:"",duration:5},{name:"Main point",visual:"",narration:"",duration:8},{name:"Payoff and CTA",visual:"",narration:"",duration:5}];
+    renderScenes();
+    countWords();
+  }
+  render();
+}
 function updateAccountUI(){
   if(cloudUser){
     accountButton.textContent=cloudUser.email||"Cloud account";
@@ -83,7 +103,12 @@ async function saveCloudProject(project){
 }
 async function loadCloudProjects(){
   if(!cloudClient||!cloudUser)return;
+  const requestedOwnerId=cloudUser.id;
+  if(cloudOwnerId&&cloudOwnerId!==requestedOwnerId)clearCloudProjects();
+  cloudOwnerId=requestedOwnerId;
   const {data,error}=await cloudClient.from("creator_projects").select("id,title,format,project_data,updated_at").order("updated_at",{ascending:false});
+  // Ignore a response that finishes after the account has changed or signed out.
+  if(cloudUser?.id!==requestedOwnerId||cloudOwnerId!==requestedOwnerId)return;
   if(error){authMessage("Cloud projects could not load: "+error.message,true);return;}
   const byId=new Map(projects.map(p=>[p.id,p]));
   for(const row of (data||[])){
@@ -123,12 +148,16 @@ async function initCloud(){
     const {data,error}=await cloudClient.auth.getSession();
     if(error)throw error;
     cloudUser=data.session?.user||null;
+    cloudOwnerId=cloudUser?.id||null;
     updateAccountUI();
     if(cloudUser)await loadCloudProjects();
     cloudClient.auth.onAuthStateChange((_event,session)=>{
-      cloudUser=session?.user||null;
+      const nextUser=session?.user||null;
+      if(cloudUser?.id!==nextUser?.id)clearCloudProjects();
+      cloudUser=nextUser;
+      cloudOwnerId=nextUser?.id||null;
       if(cloudUser){updateAccountUI();void loadCloudProjects();}
-      else{clearCloudProjects();updateAccountUI();}
+      else{updateAccountUI();}
     });
   }catch(error){
     cloudClient=null;
@@ -292,6 +321,4 @@ if("speechSynthesis" in window){
   $("voice-preview").disabled=true;$("voice-stop").disabled=true;
   $("voice-preview").title="Speech preview is not supported by this browser";
 }
-$("export").addEventListener("click",()=>{
-  if(active){$("summary").textContent+="\nVoiceover words: "+($("voiceover-text").value.trim().split(/\s+/).filter(Boolean).length)+"\nCaptions: "+$("captions-text").value.split(/\n+/).filter(Boolean).length+"\nShot list: "+scenes.length+" scene(s)";}
-});
+
