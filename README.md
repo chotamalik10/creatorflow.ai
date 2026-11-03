@@ -21,7 +21,7 @@ CreatorFlow AI is an open-source project for turning a video idea into a structu
 - Optional email/password auth and private cloud project sync (requires your Supabase project configuration)
 
 ## Public website deployment
-The repository includes a GitHub Pages workflow. On a push to `main`, it attempts to enable Pages and deploy the static PWA. Expected project URL: `https://chotamalik10.github.io/creatorflow.ai/`. Confirm the deployment in the repository's **Actions** tab before sharing the URL. Add the final site URL to Supabase's allowed authentication redirect URLs after cloud auth is configured. See [Deployment guide](docs/DEPLOYMENT.md).
+The repository includes a GitHub Pages workflow. Before its first successful deployment, the repository owner must open **Settings → Pages → Build and deployment → Source** and select **GitHub Actions**. Then pushes to `main` deploy the static PWA. Expected project URL: `https://chotamalik10.github.io/creatorflow.ai/`. Confirm the deployment in the repository's **Actions** tab before sharing the URL. Add the final site URL to Supabase's allowed authentication redirect URLs after cloud auth is configured. See [Deployment guide](docs/DEPLOYMENT.md).
 
 ## Run on Windows
 Install Git and Python 3, then open PowerShell:
