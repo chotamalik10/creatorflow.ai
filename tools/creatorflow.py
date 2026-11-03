@@ -51,14 +51,14 @@ def build_ai_prompt(payload: dict[str, Any]) -> tuple[str, str]:
     audience = payload.get("audience", "general viewers")
     if not isinstance(title, str) or not title.strip() or len(title) > 240:
         raise ValueError("Enter a video title (maximum 240 characters).")
-    if video_format not in {"Shorts", "Long-form"}:
+    if not isinstance(video_format, str) or video_format not in {"Shorts", "Long-form"}:
         raise ValueError("Format must be Shorts or Long-form.")
     if not isinstance(tone, str) or len(tone) > 80:
         raise ValueError("Tone must be a short text value.")
     if not isinstance(audience, str) or len(audience) > 120:
         raise ValueError("Audience must be a short text value.")
     model = payload.get("model", "qwen2.5:1.5b")
-    if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9_.:/-]{1,100}", model):
+    if not isinstance(model, str) or ".." in model or not re.fullmatch(r"[A-Za-z0-9_.:/-]{1,100}", model):
         raise ValueError("Model name contains unsupported characters.")
     length = "about 120–180 spoken words" if video_format == "Shorts" else "about 800–1,100 spoken words"
     prompt = (
