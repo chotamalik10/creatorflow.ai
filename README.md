@@ -4,14 +4,14 @@
 
 CreatorFlow AI is an open-source project for turning a video idea into a structured script and production plan. The goal is a public multi-user platform with an optional local/self-hosted mode, built without mandatory paid APIs.
 
-> **Honest status:** The local-first web app, Windows helper, optional Supabase account/cloud-sync integration, local Ollama script drafting and local FFmpeg slideshow renderer are implemented. Cloud accounts require owner-supplied Supabase configuration and a real two-account isolation test before public launch. Live trend research, generated voice, stock-media sourcing, animated captions, full AI editing, YouTube OAuth/publishing and analytics are not implemented.
+> **Honest status:** The local-first web app, Windows helper, optional Supabase account/cloud-sync integration, local Ollama script drafting and local FFmpeg slideshow renderer are implemented. Cloud accounts require owner-supplied Supabase configuration and a real two-account isolation test before public launch. Live trend research, downloadable generated voice tracks, stock-media sourcing, full AI editing/rendering inside the hosted dashboard, YouTube OAuth/publishing and analytics are not implemented.
 
 ## Current features
 - Responsive, installable PWA shell
 - Niche-based brainstorming prompts (not live trend data)
 - Shorts and long-form script structures
 - Editable scripts and word count
-- Scene, voiceover and audio planning
+- Scene-by-scene visual direction, narration and duration planning\n- Browser speech preview using voices installed on the device (preview only; no MP3 export)\n- Editable caption preparation and SRT subtitle download with estimated timings\n- Downloadable script text and shot-list CSV
 - Browser-local project saving
 - JSON project export and text brief copy
 - Python terminal helper with no third-party dependencies
