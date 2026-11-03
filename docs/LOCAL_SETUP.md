@@ -52,3 +52,25 @@ py tools/creatorflow.py serve --host 0.0.0.0
 - Prompts are sent to Ollama on the laptop through the local CreatorFlow server, not to a paid AI provider.
 - Use LAN mode only on a trusted private Wi-Fi network. Do not expose the development server to the public internet.
 - The hosted static website cannot access your laptop's Ollama service; local AI works in local server mode only.
+
+
+## Render a basic MP4 locally with FFmpeg
+
+CreatorFlow includes a local slideshow renderer. It combines images from a folder into a vertical Shorts video or horizontal video. You may add an audio track that you own or are licensed to use.
+
+1. Install FFmpeg for Windows and make sure `ffmpeg.exe` is available on PATH.
+2. Put your own or properly licensed images in a folder, for example `media\`.
+3. Optionally place a licensed audio file in the same folder.
+4. Run one of these commands in PowerShell:
+
+```powershell
+py tools/creatorflow.py render --images .\media --output .\exports\short.mp4 --orientation vertical --seconds 5
+```
+
+With audio:
+
+```powershell
+py tools/creatorflow.py render --images .\media --audio .\media\voiceover.mp3 --output .\exports\video.mp4 --orientation horizontal --seconds 6
+```
+
+The renderer supports JPG, JPEG, PNG and WebP images, up to 40 images per render. It produces H.264 MP4 at 30 fps. Rendering uses your laptop CPU and may take time. It is a slideshow renderer, not a full AI editor: it does not find stock footage, generate voice, create animated captions or publish to YouTube.
