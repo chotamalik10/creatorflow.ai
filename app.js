@@ -98,9 +98,13 @@ async function loadCloudProjects(){
   const {data,error}=await cloudClient.from("creator_projects").select("id,title,format,project_data,updated_at").order("updated_at",{ascending:false});
   if(error){authMessage("Cloud projects could not load: "+error.message,true);return;}
   const byId=new Map(projects.map(p=>[p.id,p]));
-  for(const row of (data||[])){byId.set(row.id,{...(row.project_data||{}),id:row.id,title:row.title,format:row.format,updatedAt:row.updated_at});}
+  for(const row of (data||[])){
+    cloudProjectIds.add(row.id);
+    byId.set(row.id,{...(row.project_data||{}),id:row.id,title:row.title,format:row.format,updatedAt:row.updated_at});
+  }
   projects=Array.from(byId.values()).sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
-  localStorage.setItem(KEY,JSON.stringify(projects));render();
+  localStorage.setItem(KEY,JSON.stringify(projects.filter(p=>!cloudProjectIds.has(p.id))));
+  render();
 }
 async function syncLocalProjects(){
   if(!cloudClient||!cloudUser)return;
