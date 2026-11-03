@@ -54,6 +54,16 @@ class ProjectValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Model name"):
             CLI.build_ai_prompt({"title": "Test", "model": "../bad"})
 
+    def test_builds_vertical_ffmpeg_command(self):
+        command = CLI.build_render_command("ffmpeg", [Path("one.png"), Path("two.jpg")], Path("out.mp4"), Path("music.mp3"), "vertical", 5)
+        self.assertIn("1080:1920", " ".join(command))
+        self.assertLess(command.index("music.mp3"), command.index("-filter_complex"))
+        self.assertIn("2:a:0", command)
+
+    def test_rejects_non_mp4_render_output(self):
+        with self.assertRaisesRegex(ValueError, "mp4"):
+            CLI.build_render_command("ffmpeg", [Path("one.png")], Path("out.mov"))
+
     def test_rejects_non_object_json(self):
         path = self.write_json(["not", "an", "object"])
         with self.assertRaisesRegex(ValueError, "JSON object"):
