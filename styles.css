@@ -38,3 +38,15 @@
 @media(max-width:680px){.auth-social{gap:9px}.social-button{min-height:48px}}
 
 .auth-social[hidden],.auth-email-section[hidden]{display:none!important}
+
+
+/* Structured production workflow */
+.scene-card{border:1px solid var(--line,#2a3550);background:rgba(255,255,255,.025);border-radius:14px;padding:14px;margin:12px 0}
+.scene-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#a99cff;font-size:11px;letter-spacing:1px}
+.scene-head button{background:transparent;border:0;color:#ff9caa;font-size:12px}
+.scene-card label{display:block;margin:10px 0 6px;color:var(--muted);font-size:11px}
+.scene-card textarea,.scene-card input{width:100%;box-sizing:border-box}
+#voice .panel .actions,#export .panel .actions{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}
+#voice .helper{display:block;line-height:1.55;margin:10px 0;color:var(--muted)}
+#voice hr{border:0;border-top:1px solid var(--line,#2a3550);margin:22px 0}
+#voice textarea{width:100%;box-sizing:border-box}
