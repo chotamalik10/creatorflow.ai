@@ -33,7 +33,7 @@ let cloudClient=null,cloudUser=null;
 const cloudProjectIds=new Set();
 const authDialog=$("auth-dialog"),authStatus=$("auth-status"),accountButton=$("account-btn");
 function authMessage(message,isError=false){authStatus.textContent=message;authStatus.classList.toggle("error",isError)}
-function clearCloudProjects(){projects=projects.filter(p=>!cloudProjectIds.has(p.id));cloudProjectIds.clear();render()}
+function clearCloudProjects(){const activeWasCloud=active&&cloudProjectIds.has(active.id);projects=projects.filter(p=>!cloudProjectIds.has(p.id));cloudProjectIds.clear();if(activeWasCloud){active=null;$("title").value="";$("script-text").value="";$("voice").value="";$("music").value="";scenes=[{name:"Opening hook"},{name:"Main point"},{name:"Payoff and CTA"}];renderScenes();countWords()}render()}
 function updateAccountUI(){
   if(cloudUser){
     accountButton.textContent=cloudUser.email||"Cloud account";
