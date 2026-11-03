@@ -15,6 +15,7 @@ CreatorFlow AI is an open-source project for turning a video idea into a structu
 - Browser-local project saving
 - JSON project export and text brief copy
 - Python terminal helper with no third-party dependencies
+- Optional local AI script drafting through Ollama when using the local server
 - Initial Supabase schema with per-user Row Level Security policies
 - Optional email/password auth and private cloud project sync (requires your Supabase project configuration)
 
@@ -46,7 +47,7 @@ py tools/creatorflow.py validate .\creatorflow-project.json
 ## Free-first architecture
 - Static PWA hosting can use GitHub Pages or Cloudflare Pages free tiers.
 - Supabase Auth/Postgres can provide a small beta's login and private cloud projects on its free tier.
-- Local Ollama is an optional AI route for users with a capable computer.
+- Local Ollama is an optional AI route for users with a capable computer. The local Python server provides the drafting endpoint; the hosted static site does not run AI itself.
 - FFmpeg is an optional local rendering tool.
 - No AI provider key is needed for the current planning features.
 
@@ -67,7 +68,7 @@ Configure `config.js` with your Supabase project URL and public anon/publishable
 4. [x] Supabase browser auth and private cloud sync integration (configuration required)
 5. [ ] Supabase signup/login, password recovery and cloud project sync integration tests / two-account isolation test
 6. [ ] Automated tests for data isolation and authentication
-7. [ ] Optional local AI provider adapter (Ollama)
+7. [x] Optional local Ollama script drafting in local server mode
 8. [ ] Caption/asset workflow and local FFmpeg rendering
 9. [ ] YouTube OAuth, explicit publishing approval and analytics
 10. [ ] Security, accessibility and deployment verification
