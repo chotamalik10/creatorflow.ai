@@ -3,11 +3,13 @@
 ## GitHub Pages
 The repository contains a GitHub Actions workflow at `.github/workflows/pages.yml`. It is configured to enable GitHub Pages if needed and deploy the repository root when changes reach `main`.
 
-1. Open the repository's **Actions** tab.
-2. Check the latest **Deploy CreatorFlow PWA** run.
-3. When it succeeds, open the deployment URL shown by the workflow. The expected project URL is `https://chotamalik10.github.io/creatorflow.ai/`.
-4. Test the site on both desktop and a phone.
-5. If the workflow reports a Pages permission or repository-policy error, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**, then rerun the workflow.
+1. Open the repository **Settings → Pages**.
+2. Under **Build and deployment → Source**, select **GitHub Actions** and save.
+3. Open the repository's **Actions** tab and check the latest **Deploy CreatorFlow PWA** run.
+4. When it succeeds, open the deployment URL shown by the workflow. The expected project URL is `https://chotamalik10.github.io/creatorflow.ai/`.
+5. Test the site on both desktop and a phone.
+
+The GitHub connection used for repository edits cannot enable the Pages site through its current permissions, so the repository owner must perform step 2 once.
 
 ## Enable cloud accounts
 Public static hosting does not create a database. To activate multi-user accounts and cross-device project sync:
