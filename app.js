@@ -8,90 +8,52 @@ function fresh(){active={id:crypto.randomUUID(),title:"",format:"Shorts",script:
 function open(id){let p=projects.find(x=>x.id===id);if(!p)return;active=JSON.parse(JSON.stringify(p));$("title").value=p.title;$("script-format").value=p.format;$("script-text").value=p.script;$("voice").value=p.voice||"";$("music").value=p.music||"";scenes=p.scenes||[];renderScenes();countWords();go("script")}
 function save(){if(!active)fresh();active.title=$("title").value.trim()||"Untitled project";active.format=$("script-format").value;active.script=$("script-text").value;active.scenes=scenes.map(s=>({...s}));active.voice=$("voice").value;active.music=$("music").value;active.updatedAt=new Date().toISOString();let i=projects.findIndex(p=>p.id===active.id);if(i<0)projects.unshift(active);else projects[i]=active;localStorage.setItem(KEY,JSON.stringify(projects.filter(p=>!cloudProjectIds.has(p.id))));render();if(cloudClient&&cloudUser){void saveCloudProject(active)}notify(cloudUser?"Saved and syncing to cloud":"Saved on this device")}
 $("new").onclick=fresh;$("suggest").onclick=()=>{let list=ideas[$("niche").value]||ideas["AI & Technology"],aud=$("audience").value.trim();$("ideas-list").innerHTML=list.map((s,i)=>'<article class="idea-card"><small>'+esc($("niche").value)+'</small><h3>'+esc(s)+'</h3><p>'+(aud?"Audience: "+esc(aud)+". ":"")+"Idea starter — check demand and verify facts before publishing."+'</p><button data-idea="'+i+'">Use this idea →</button></article>').join();$("ideas-list").querySelectorAll("[data-idea]").forEach(b=>b.onclick=()=>{fresh();$("title").value=list[Number(b.dataset.idea)];$("script-format").value=$("format").value})};
-$("outline").onclick=()=>{let title=$("title").value||"Your video topic",short=$("script-format").value==="Shorts";$("script-text").value=short?"[HOOK — 0–3s]
-"+title+": here's what most people miss.
-
-[SETUP]
-Explain why this matters.
-
-[MAIN VALUE]
-1. Share the first key point.
-2. Give a concrete example.
-3. Offer one useful action.
-
-[PAYOFF]
-Summarise the lesson in one memorable line.
-
-[CALL TO ACTION]
-Ask one relevant question.
-
-[WRITER NOTE]
-Verify factual claims and add source links.":"[COLD OPEN]
-Lead with a question, problem or surprising verified result about "+title+".
-
-[INTRODUCTION]
-Explain what viewers will learn and why it matters.
-
-[SECTION 1 — CONTEXT]
-Give background and a clear example.
-
-[SECTION 2 — CORE IDEAS]
-Explain 2–4 key points with evidence and examples.
-
-[SECTION 3 — PRACTICAL TAKEAWAY]
-Show how viewers can apply the information.
-
-[CONCLUSION]
-Summarise the lesson and add one call to action.
-
-[WRITER NOTE]
-Tone: "+$("tone").value+". Verify claims and add source links.";countWords();notify("Script structure inserted — edit it freely")};
+$("outline").onclick=()=>{let title=$("title").value||"Your video topic",short=$("script-format").value==="Shorts";$("script-text").value=short?"[HOOK — 0–3s]\n"+title+": here's what most people miss.\n\n[SETUP]\nExplain why this matters.\n\n[MAIN VALUE]\n1. Share the first key point.\n2. Give a concrete example.\n3. Offer one useful action.\n\n[PAYOFF]\nSummarise the lesson in one memorable line.\n\n[CALL TO ACTION]\nAsk one relevant question.\n\n[WRITER NOTE]\nVerify factual claims and add source links.":"[COLD OPEN]\nLead with a question, problem or surprising verified result about "+title+".\n\n[INTRODUCTION]\nExplain what viewers will learn and why it matters.\n\n[SECTION 1 — CONTEXT]\nGive background and a clear example.\n\n[SECTION 2 — CORE IDEAS]\nExplain 2–4 key points with evidence and examples.\n\n[SECTION 3 — PRACTICAL TAKEAWAY]\nShow how viewers can apply the information.\n\n[CONCLUSION]\nSummarise the lesson and add one call to action.\n\n[WRITER NOTE]\nTone: "+$("tone").value+". Verify claims and add source links.";countWords();notify("Script structure inserted — edit it freely")};
 function countWords(){$("words").textContent=$("script-text").value.trim().split(/\s+/).filter(Boolean).length+" words"}$("script-text").oninput=countWords;$("save").onclick=save;
 function renderScenes(){$("scenes").innerHTML=scenes.map((s,i)=>'<div class="scene"><b>'+String(i+1).padStart(2,"0")+'</b><input data-scene="'+i+'" value="'+esc(s.name)+'" aria-label="Scene name"><button data-del="'+i+'" aria-label="Remove scene">×</button></div>').join();$("scenes").querySelectorAll("[data-scene]").forEach(x=>x.oninput=()=>scenes[Number(x.dataset.scene)].name=x.value);$("scenes").querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>{scenes.splice(Number(x.dataset.del),1);renderScenes()})}
 $("add-scene").onclick=()=>{scenes.push({name:"New scene"});renderScenes()};$("save-plan").onclick=save;
-function current(){if(!active&&$("title").value.trim())save();return active}function brief(){let p=current();if(!p)return "No project saved yet.";return "CREATORFLOW AI — PROJECT BRIEF
-Title: "+p.title+"
-Format: "+p.format+"
-
-SCRIPT
-"+p.script+"
-
-SCENES
-"+p.scenes.map((s,i)=>(i+1)+". "+s.name).join("
-")+"
-
-VOICEOVER
-"+p.voice+"
-
-AUDIO NOTES
-"+p.music+"
-
-Status: planning brief only; no video has been rendered."}
+function current(){if(!active&&$("title").value.trim())save();return active}function brief(){let p=current();if(!p)return "No project saved yet.";return "CREATORFLOW AI — PROJECT BRIEF\nTitle: "+p.title+"\nFormat: "+p.format+"\n\nSCRIPT\n"+p.script+"\n\nSCENES\n"+p.scenes.map((s,i)=>(i+1)+". "+s.name).join("\n")+"\n\nVOICEOVER\n"+p.voice+"\n\nAUDIO NOTES\n"+p.music+"\n\nStatus: planning brief only; no video has been rendered."}
 $("json").onclick=()=>{let p=current();if(!p){notify("Create a project first");return}let u=URL.createObjectURL(new Blob([JSON.stringify(p,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=u;a.download="creatorflow-project.json";a.click();URL.revokeObjectURL(u);notify("Project JSON downloaded")};
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(brief());notify("Project brief copied")}catch(e){notify("Clipboard unavailable — use JSON download")}};
-$("export").addEventListener("click",()=>{let p=current();$("summary").textContent=p?"Title: "+p.title+"
-Format: "+p.format+"
-Script words: "+p.script.trim().split(/\s+/).filter(Boolean).length+"
-Planned scenes: "+p.scenes.length+"
-Saved locally: yes
-Rendered video: no — rendering is planned.":"Create or save a project to prepare your package."});
+$("export").addEventListener("click",()=>{let p=current();$("summary").textContent=p?"Title: "+p.title+"\nFormat: "+p.format+"\nScript words: "+p.script.trim().split(/\s+/).filter(Boolean).length+"\nPlanned scenes: "+p.scenes.length+"\nSaved locally: yes\nRendered video: no — rendering is planned.":"Create or save a project to prepare your package."});
 render();renderScenes();countWords();if("serviceWorker"in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 
 // Optional Supabase cloud account and private project sync.
 const cloudConfig=window.CREATORFLOW_CONFIG||{};
-let cloudClient=null,cloudUser=null;const cloudProjectIds=new Set();
+let cloudClient=null,cloudUser=null;
+const cloudProjectIds=new Set();
 const authDialog=$("auth-dialog"),authStatus=$("auth-status"),accountButton=$("account-btn");
 function authMessage(message,isError=false){authStatus.textContent=message;authStatus.classList.toggle("error",isError)}
 function clearCloudProjects(){projects=projects.filter(p=>!cloudProjectIds.has(p.id));cloudProjectIds.clear();render()}
 function updateAccountUI(){
-  if(cloudUser){accountButton.textContent=cloudUser.email||"Cloud account";$("mode-label").textContent="● CLOUD SYNC";$("auth-signout").hidden=false;$("auth-sync-local").hidden=false;$("auth-signin").hidden=true;$("auth-signup").hidden=true;authMessage("Signed in as "+(cloudUser.email||"your account")+". Your cloud projects are private to your account.");}
-  else{accountButton.textContent=cloudClient?"Sign in / Sync":"Local mode";$("mode-label").textContent="● "+(cloudClient?"LOCAL MODE":"LOCAL ONLY");$("auth-signout").hidden=true;$("auth-sync-local").hidden=true;$("auth-signin").hidden=false;$("auth-signup").hidden=false;}
+  if(cloudUser){
+    accountButton.textContent=cloudUser.email||"Cloud account";
+    $("mode-label").textContent="● CLOUD SYNC";
+    $("auth-signout").hidden=false;
+    $("auth-sync-local").hidden=false;
+    $("auth-signin").hidden=true;
+    $("auth-signup").hidden=true;
+    authMessage("Signed in as "+(cloudUser.email||"your account")+". Cloud projects are private to your account.");
+  }else{
+    accountButton.textContent=cloudClient?"Sign in / Sync":"Local mode";
+    $("mode-label").textContent="● "+(cloudClient?"LOCAL MODE":"LOCAL ONLY");
+    $("auth-signout").hidden=true;
+    $("auth-sync-local").hidden=true;
+    $("auth-signin").hidden=false;
+    $("auth-signup").hidden=false;
+  }
 }
 async function saveCloudProject(project){
   if(!cloudClient||!cloudUser||!project)return;
   const row={id:project.id,owner_id:cloudUser.id,title:project.title||"Untitled project",format:project.format||"Shorts",project_data:project,updated_at:project.updatedAt||new Date().toISOString()};
   const {error}=await cloudClient.from("creator_projects").upsert(row,{onConflict:"id"});
-  if(error){notify("Local save succeeded; cloud sync failed");console.error("CreatorFlow cloud save:",error.message);}else{cloudProjectIds.add(project.id);localStorage.setItem(KEY,JSON.stringify(projects.filter(p=>!cloudProjectIds.has(p.id))));}
+  if(error){
+    notify("Local save succeeded; cloud sync failed");
+    console.error("CreatorFlow cloud save:",error.message);
+  }else{
+    cloudProjectIds.add(project.id);
+    localStorage.setItem(KEY,JSON.stringify(projects.filter(p=>!cloudProjectIds.has(p.id))));
+  }
 }
 async function loadCloudProjects(){
   if(!cloudClient||!cloudUser)return;
@@ -113,7 +75,11 @@ async function syncLocalProjects(){
   if(!confirm("Upload "+local.length+" local project(s) to your private cloud workspace?"))return;
   $("auth-sync-local").disabled=true;
   let failures=0;
-  for(const project of local){const {error}=await cloudClient.from("creator_projects").upsert({id:project.id,owner_id:cloudUser.id,title:project.title||"Untitled project",format:project.format||"Shorts",project_data:project,updated_at:project.updatedAt||new Date().toISOString()},{onConflict:"id"});if(error)failures++;}
+  for(const project of local){
+    const {error}=await cloudClient.from("creator_projects").upsert({id:project.id,owner_id:cloudUser.id,title:project.title||"Untitled project",format:project.format||"Shorts",project_data:project,updated_at:project.updatedAt||new Date().toISOString()},{onConflict:"id"});
+    if(error)failures++;else cloudProjectIds.add(project.id);
+  }
+  localStorage.setItem(KEY,JSON.stringify(projects.filter(p=>!cloudProjectIds.has(p.id))));
   $("auth-sync-local").disabled=false;
   authMessage(failures?"Upload finished with "+failures+" error(s). Check your database schema and RLS.":"All "+local.length+" local project(s) uploaded to your private cloud workspace.",!!failures);
   if(!failures)notify("Local projects synced");
@@ -121,34 +87,68 @@ async function syncLocalProjects(){
 }
 async function initCloud(){
   const url=String(cloudConfig.supabaseUrl||"").trim(),key=String(cloudConfig.supabaseAnonKey||"").trim();
-  if(!url||!key||!window.supabase?.createClient){authMessage("Cloud sync is not configured yet. Local planning and exports are available without an account.");updateAccountUI();return;}
-  try{cloudClient=window.supabase.createClient(url,key);const {data,error}=await cloudClient.auth.getSession();if(error)throw error;cloudUser=data.session?.user||null;updateAccountUI();if(cloudUser)await loadCloudProjects();
-    cloudClient.auth.onAuthStateChange((_event,session)=>{cloudUser=session?.user||null;if(cloudUser){updateAccountUI();void loadCloudProjects()}else{clearCloudProjects();updateAccountUI()}});
-  }catch(error){cloudClient=null;authMessage("Cloud setup error: "+error.message,true);updateAccountUI();}
+  if(!url||!key||!window.supabase?.createClient){
+    authMessage("Cloud sync is not configured yet. Local planning and exports work without an account.");
+    updateAccountUI();
+    return;
+  }
+  try{
+    cloudClient=window.supabase.createClient(url,key);
+    const {data,error}=await cloudClient.auth.getSession();
+    if(error)throw error;
+    cloudUser=data.session?.user||null;
+    updateAccountUI();
+    if(cloudUser)await loadCloudProjects();
+    cloudClient.auth.onAuthStateChange((_event,session)=>{
+      cloudUser=session?.user||null;
+      if(cloudUser){updateAccountUI();void loadCloudProjects();}
+      else{clearCloudProjects();updateAccountUI();}
+    });
+  }catch(error){
+    cloudClient=null;
+    authMessage("Cloud setup error: "+error.message,true);
+    updateAccountUI();
+  }
 }
 accountButton.onclick=()=>{if(authDialog?.showModal)authDialog.showModal();else notify("Please use a modern browser for account access")};
 $("auth-close").onclick=()=>authDialog.close();
-$("auth-form").onsubmit=async event=>{event.preventDefault();if(!cloudClient){authMessage("Cloud is not configured. Ask the site administrator to finish Supabase setup.",true);return;}
+$("auth-form").onsubmit=async event=>{
+  event.preventDefault();
+  if(!cloudClient){authMessage("Cloud is not configured. Ask the site administrator to finish Supabase setup.",true);return;}
   const email=$("auth-email").value.trim(),password=$("auth-password").value;
   $("auth-signin").disabled=true;
   const {data,error}=await cloudClient.auth.signInWithPassword({email,password});
   $("auth-signin").disabled=false;
   if(error){authMessage(error.message,true);return;}
-  cloudUser=data.user;updateAccountUI();await loadCloudProjects();authMessage("Signed in. Your private cloud projects are ready.");notify("Signed in successfully");
+  cloudUser=data.user;
+  updateAccountUI();
+  await loadCloudProjects();
+  authMessage("Signed in. Your private cloud projects are ready.");
+  notify("Signed in successfully");
 };
-$("auth-signup").onclick=async()=>{if(!cloudClient){authMessage("Cloud is not configured yet. Local mode remains available.",true);return;}
+$("auth-signup").onclick=async()=>{
+  if(!cloudClient){authMessage("Cloud is not configured yet. Local mode remains available.",true);return;}
   const email=$("auth-email").value.trim(),password=$("auth-password").value;
   if(!email||password.length<8){authMessage("Enter a valid email and a password of at least 8 characters.",true);return;}
   const {data,error}=await cloudClient.auth.signUp({email,password,options:{emailRedirectTo:location.href.split("#")[0]}});
   if(error){authMessage(error.message,true);return;}
-  if(data.session){cloudUser=data.user;updateAccountUI();await loadCloudProjects();authMessage("Account created and signed in.");}
-  else authMessage("Account created. Check your email for the verification link, then sign in.");
+  if(data.session){
+    cloudUser=data.user;updateAccountUI();await loadCloudProjects();
+    authMessage("Account created and signed in.");
+  }else authMessage("Account created. Check your email for the verification link, then sign in.");
 };
-$("auth-reset").onclick=async()=>{if(!cloudClient){authMessage("Cloud is not configured yet.",true);return;}
-  const email=$("auth-email").value.trim();if(!email){authMessage("Enter your email address first.",true);return;}
+$("auth-reset").onclick=async()=>{
+  if(!cloudClient){authMessage("Cloud is not configured yet.",true);return;}
+  const email=$("auth-email").value.trim();
+  if(!email){authMessage("Enter your email address first.",true);return;}
   const {error}=await cloudClient.auth.resetPasswordForEmail(email,{redirectTo:location.href.split("#")[0]});
   authMessage(error?error.message:"If this email has an account, a password reset link has been sent.",!!error);
 };
-$("auth-signout").onclick=async()=>{if(!cloudClient)return;const {error}=await cloudClient.auth.signOut();if(error){authMessage(error.message,true);return;}cloudUser=null;clearCloudProjects();updateAccountUI();notify("Signed out");};
+$("auth-signout").onclick=async()=>{
+  if(!cloudClient)return;
+  const {error}=await cloudClient.auth.signOut();
+  if(error){authMessage(error.message,true);return;}
+  cloudUser=null;clearCloudProjects();updateAccountUI();notify("Signed out");
+};
 $("auth-sync-local").onclick=()=>void syncLocalProjects();
 void initCloud();
