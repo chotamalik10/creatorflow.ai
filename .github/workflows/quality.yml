@@ -23,5 +23,7 @@ jobs:
         run: node --check app.js
       - name: Validate JSON manifests
         run: python -c "import json; json.load(open('manifest.webmanifest', encoding='utf-8'))"
+      - name: Run CLI unit tests
+        run: python -m unittest discover -s tests -v
       - name: Check CLI help
         run: python tools/creatorflow.py --help
