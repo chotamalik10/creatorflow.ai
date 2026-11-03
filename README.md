@@ -4,7 +4,7 @@
 
 CreatorFlow AI is an open-source project for turning a video idea into a structured script and production plan. The goal is a public multi-user platform with an optional local/self-hosted mode, built without mandatory paid APIs.
 
-> **Honest status:** The current web app is a local-first planning prototype. Idea prompts, editable scripts, scene planning, local browser saving and JSON export are implemented. The cloud SQL foundation and terminal helper are being added. Cloud login/sync, live AI research, generated voice, media sourcing, video rendering, YouTube publishing and analytics are not active yet.
+> **Honest status:** The local-first web app, Windows helper, optional Supabase account/cloud-sync integration, local Ollama script drafting and local FFmpeg slideshow renderer are implemented. Cloud accounts require owner-supplied Supabase configuration and a real two-account isolation test before public launch. Live trend research, generated voice, stock-media sourcing, animated captions, full AI editing, YouTube OAuth/publishing and analytics are not implemented.
 
 ## Current features
 - Responsive, installable PWA shell
@@ -19,6 +19,9 @@ CreatorFlow AI is an open-source project for turning a video idea into a structu
 - Local MP4 slideshow rendering from creator-owned/licensed images and optional audio via FFmpeg
 - Initial Supabase schema with per-user Row Level Security policies
 - Optional email/password auth and private cloud project sync (requires your Supabase project configuration)
+
+## Public website deployment
+The repository includes a GitHub Pages workflow. On a push to `main`, it attempts to enable Pages and deploy the static PWA. Expected project URL: `https://chotamalik10.github.io/creatorflow.ai/`. Confirm the deployment in the repository's **Actions** tab before sharing the URL. Add the final site URL to Supabase's allowed authentication redirect URLs after cloud auth is configured. See [Deployment guide](docs/DEPLOYMENT.md).
 
 ## Run on Windows
 Install Git and Python 3, then open PowerShell:
@@ -67,8 +70,7 @@ Configure `config.js` with your Supabase project URL and public anon/publishable
 2. [x] Free-first architecture and initial private-project database schema
 3. [x] Dependency-free Windows CLI / local Wi-Fi serving helper
 4. [x] Supabase browser auth and private cloud sync integration (configuration required)
-5. [ ] Supabase signup/login, password recovery and cloud project sync integration tests / two-account isolation test
-6. [ ] Automated tests for data isolation and authentication
+5. [ ] Live Supabase signup/login and two-account RLS isolation verification
 7. [x] Optional local Ollama script drafting in local server mode
 8. [x] Local slideshow MP4 rendering with FFmpeg
 9. [ ] Caption/asset workflow and richer video templates
@@ -82,4 +84,4 @@ Configure `config.js` with your Supabase project URL and public anon/publishable
 - Respect copyright, licenses, privacy and platform policies.
 - Keep a human approval step before publishing.
 
-See [Architecture](docs/ARCHITECTURE.md), [Local setup](docs/LOCAL_SETUP.md), [Contributing](CONTRIBUTING.md) and [MIT License](LICENSE).
+See [Architecture](docs/ARCHITECTURE.md), [Deployment](docs/DEPLOYMENT.md), [Cloud setup](docs/CLOUD_SETUP.md), [Local setup](docs/LOCAL_SETUP.md), [Contributing](CONTRIBUTING.md) and [MIT License](LICENSE).
