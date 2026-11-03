@@ -38,6 +38,9 @@ function updateAccountUI(){
   if(cloudUser){
     accountButton.textContent=cloudUser.email||"Cloud account";
     $("mode-label").textContent="● CLOUD SYNC";
+    document.querySelector(".side-note strong").textContent="Cloud workspace";
+    document.querySelector(".side-note small").textContent="Private projects sync to your account.";
+    document.querySelector(".stats article:nth-child(3) strong").textContent="Cloud sync";
     $("auth-signout").hidden=false;
     $("auth-sync-local").hidden=false;
     $("auth-signin").hidden=true;
@@ -46,6 +49,9 @@ function updateAccountUI(){
   }else{
     accountButton.textContent=cloudClient?"Sign in / Sync":"Local mode";
     $("mode-label").textContent="● "+(cloudClient?"LOCAL MODE":"LOCAL ONLY");
+    document.querySelector(".side-note strong").textContent="Local workspace";
+    document.querySelector(".side-note small").textContent="Projects stay on this device.";
+    document.querySelector(".stats article:nth-child(3) strong").textContent="On-device";
     $("auth-signout").hidden=true;
     $("auth-sync-local").hidden=true;
     $("auth-signin").hidden=false;
