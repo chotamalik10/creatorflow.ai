@@ -2,9 +2,13 @@
 
 **A free-first, mobile-friendly workspace for YouTube creators.**
 
+[![Quality checks](https://github.com/chotamalik10/creatorflow.ai/actions/workflows/ci.yml/badge.svg)](https://github.com/chotamalik10/creatorflow.ai/actions/workflows/ci.yml)
+[![Deploy](https://github.com/chotamalik10/creatorflow.ai/actions/workflows/pages.yml/badge.svg)](https://github.com/chotamalik10/creatorflow.ai/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 CreatorFlow AI is an open-source project for turning a video idea into a structured script and production plan. The goal is a public multi-user platform with an optional local/self-hosted mode, built without mandatory paid APIs.
 
-> **Honest status:** The local-first web app, Windows helper, optional Supabase account/cloud-sync integration, local Ollama script drafting and local FFmpeg slideshow renderer are implemented. Cloud accounts require owner-supplied Supabase configuration and a real two-account isolation test before public launch. Live trend research, downloadable generated voice tracks, stock-media sourcing, full AI editing/rendering inside the hosted dashboard, YouTube OAuth/publishing and analytics are not implemented.
+> **Honest status:** The local-first web app, Windows helper, optional Supabase account/cloud-sync integration, local Ollama script drafting and local FFmpeg slideshow renderer are implemented. Cloud accounts require owner-supplied Supabase configuration and a real two-account isolation test before public launch. Google/GitHub OAuth require provider setup in Supabase. Live trend research, downloadable generated voice tracks, stock-media sourcing, full AI editing/rendering inside the hosted dashboard, YouTube OAuth/publishing and analytics are not implemented.
 
 ## Current features
 - Responsive, installable PWA shell
@@ -66,7 +70,7 @@ Free services have quotas, limitations and policies that can change. This projec
 3. Run `supabase/schema.sql`.
 4. Do not expose the service-role key in frontend code.
 
-Configure `config.js` with your Supabase project URL and public anon/publishable key after running the schema. The frontend supports sign-up, sign-in, password reset requests, sign-out, cloud loading and manual local-project upload. Cloud sync is unavailable until a real Supabase project is configured and tested. Never put a service-role key in `config.js`.
+Configure `config.js` with your Supabase project URL and public anon/publishable key after running the schema. The frontend supports sign-up, sign-in, password reset requests, sign-out, cloud loading and manual local-project upload. Cloud sync is unavailable until a real Supabase project is configured and tested. Never put a service-role key in `config.js`. See [Cloud setup](docs/CLOUD_SETUP.md), including Google OAuth provider configuration and the `Unsupported provider` troubleshooting steps.
 
 ## Roadmap
 1. [x] Local-first planning prototype
@@ -87,4 +91,4 @@ Configure `config.js` with your Supabase project URL and public anon/publishable
 - Respect copyright, licenses, privacy and platform policies.
 - Keep a human approval step before publishing.
 
-See [Architecture](docs/ARCHITECTURE.md), [Deployment](docs/DEPLOYMENT.md), [Cloud setup](docs/CLOUD_SETUP.md), [Local setup](docs/LOCAL_SETUP.md), [Contributing](CONTRIBUTING.md) and [MIT License](LICENSE).
+See [Architecture](docs/ARCHITECTURE.md), [Deployment](docs/DEPLOYMENT.md), [Cloud setup](docs/CLOUD_SETUP.md), [Local setup](docs/LOCAL_SETUP.md), [Contributing](CONTRIBUTING.md), [Security policy](SECURITY.md) and [MIT License](LICENSE).
