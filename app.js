@@ -181,7 +181,12 @@ async function signInWithProvider(provider){
     });
     if(error)throw error;
   }catch(error){
-    authMessage(error.message||"Social sign-in could not start. Check provider settings.",true);
+    const message=String(error?.message||"");
+    const providerName=provider==="google"?"Google":"GitHub";
+    const guidance=/unsupported provider/i.test(message)
+      ? providerName+" sign-in is not enabled in the Supabase project configured for this app. Enable "+providerName+" under Authentication → Sign In / Providers in Supabase, then retry. See docs/CLOUD_SETUP.md."
+      : (message||"Social sign-in could not start. Check the provider credentials and redirect URLs in Supabase.");
+    authMessage(guidance,true);
     document.querySelectorAll(".social-button").forEach(b=>b.disabled=false);
     button.querySelector("span").textContent=label;
   }
