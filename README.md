@@ -10,6 +10,18 @@ CreatorFlow AI is an open-source project for turning a video idea into a structu
 
 > **Honest status:** The local-first web app, Windows helper, optional Supabase account/cloud-sync integration, local Ollama script drafting and local FFmpeg slideshow renderer are implemented. Cloud accounts require owner-supplied Supabase configuration and a real two-account isolation test before public launch. Google/GitHub OAuth require provider setup in Supabase. Live trend research, downloadable generated voice tracks, stock-media sourcing, full AI editing/rendering inside the hosted dashboard, YouTube OAuth/publishing and analytics are not implemented.
 
+## Product preview
+
+These polished SVG previews illustrate the current interface and workflow. They are product concept previews, not captured user sessions or proof of a live cloud account.
+
+| Workspace dashboard | Script studio |
+|---|---|
+| ![CreatorFlow dashboard preview](docs/images/dashboard-preview.svg) | ![CreatorFlow script studio preview](docs/images/script-studio-preview.svg) |
+
+### Setup at a glance
+
+![CreatorFlow setup flow](docs/images/setup-flow.svg)
+
 ## Current features
 - Responsive, installable PWA shell
 - Niche-based brainstorming prompts (not live trend data)
