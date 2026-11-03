@@ -16,6 +16,7 @@ CreatorFlow AI is an open-source project for turning a video idea into a structu
 - JSON project export and text brief copy
 - Python terminal helper with no third-party dependencies
 - Initial Supabase schema with per-user Row Level Security policies
+- Optional email/password auth and private cloud project sync (requires your Supabase project configuration)
 
 ## Run on Windows
 Install Git and Python 3, then open PowerShell:
@@ -57,18 +58,19 @@ Free services have quotas, limitations and policies that can change. This projec
 3. Run `supabase/schema.sql`.
 4. Do not expose the service-role key in frontend code.
 
-The schema alone does **not** activate login or sync. The browser auth integration is a separate implementation phase. Never paste secrets into GitHub issues or commit them to this repository.
+Configure `config.js` with your Supabase project URL and public anon/publishable key after running the schema. The frontend supports sign-up, sign-in, password reset requests, sign-out, cloud loading and manual local-project upload. Cloud sync is unavailable until a real Supabase project is configured and tested. Never put a service-role key in `config.js`.
 
 ## Roadmap
 1. [x] Local-first planning prototype
 2. [x] Free-first architecture and initial private-project database schema
 3. [x] Dependency-free Windows CLI / local Wi-Fi serving helper
-4. [ ] Supabase signup/login, password recovery and cloud project sync
-5. [ ] Automated tests for data isolation and authentication
-6. [ ] Optional local AI provider adapter (Ollama)
-7. [ ] Caption/asset workflow and local FFmpeg rendering
-8. [ ] YouTube OAuth, explicit publishing approval and analytics
-9. [ ] Security, accessibility and deployment verification
+4. [x] Supabase browser auth and private cloud sync integration (configuration required)
+5. [ ] Supabase signup/login, password recovery and cloud project sync integration tests / two-account isolation test
+6. [ ] Automated tests for data isolation and authentication
+7. [ ] Optional local AI provider adapter (Ollama)
+8. [ ] Caption/asset workflow and local FFmpeg rendering
+9. [ ] YouTube OAuth, explicit publishing approval and analytics
+10. [ ] Security, accessibility and deployment verification
 
 ## Security and responsible use
 - Never commit API keys, service-role keys, OAuth secrets or access tokens.
